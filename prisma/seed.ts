@@ -40,6 +40,18 @@ async function main() {
         color: 'Blue',
       },
     }),
+    prisma.duck.create({
+      data: {
+        name: 'Volt',
+        color: 'White',
+      },
+    }),
+    prisma.duck.create({
+      data: {
+        name: 'Snail',
+        color: 'Purple',
+      },
+    }),
   ]);
 
   console.log('Seed data created successfully');
