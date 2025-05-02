@@ -3,7 +3,7 @@ import { NextRequest, NextResponse } from 'next/server';
 
 export async function POST(
   req: NextRequest,
-  { params }: { params: { race: string } }
+  { params }: { params: Promise<{ race: string }> }
 ) {
   const { race: raceId } = await params;
   const wallet = req.cookies.get('wallet')?.value;
@@ -68,7 +68,7 @@ export async function POST(
 
 export async function GET(
   req: NextRequest,
-  { params }: { params: { race: string } }
+  { params }: { params: Promise<{ race: string }> }
 ) {
   const { race: raceId } = await params;
   const wallet = req.cookies.get('wallet')?.value;

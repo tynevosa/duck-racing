@@ -3,8 +3,9 @@ import { NextRequest, NextResponse } from 'next/server';
 
 export async function POST(
   req: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
+  const { id } = await params;
   const { amount, suggestedName } = await req.json();
   const wallet = req.cookies.get('wallet')?.value;
 
@@ -20,7 +21,7 @@ export async function POST(
     return await prisma.$transaction(async (tx) => {
       // Get current auction
       const auction = await tx.auction.findUnique({
-        where: { id: params.id },
+        where: { id },
         include: { user: true },
       });
 
@@ -71,7 +72,7 @@ export async function POST(
 
       // Update auction with new bid
       await tx.auction.update({
-        where: { id: params.id },
+        where: { id },
         data: {
           amount,
           newName: suggestedName,
