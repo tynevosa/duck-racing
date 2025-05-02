@@ -1,0 +1,94 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
+// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
+
+generator client {
+  provider = "prisma-client-js"
+  output   = "../lib/generated/prisma"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id           String    @id @default(cuid())
+  wallet       String    @unique
+  referralCode String    @unique
+  referredBy   String? // referral wallet address
+  balance      Float     @default(0)
+  createdAt    DateTime  @default(now())
+  Bets         Bet[]
+  Auction      Auction[]
+  Duck         Duck[]
+  Deposit      Deposit[]
+  Bonus        Bonus[]
+}
+
+model Bet {
+  id        String   @id @default(cuid())
+  betType   String // "Win", "Place", "Show"
+  amount    Float
+  createdAt DateTime @default(now())
+  duckId    String
+  duck      Duck     @relation(fields: [duckId], references: [id])
+  userId    String
+  user      User     @relation(fields: [userId], references: [id])
+  raceId    String
+  Race      Race     @relation(fields: [raceId], references: [id])
+}
+
+model Race {
+  id         String   @id @default(uuid())
+  status     String
+  liveStream String
+  result     String[]
+  bets       Bet[]
+  totalWin   Float
+  totalPlace Float
+  totalShow  Float
+  expiredAt  DateTime
+  createdAt  DateTime @default(now())
+}
+
+model Duck {
+  id          String    @id @default(cuid())
+  name        String
+  color       String
+  userId      String?
+  sponsoredBy User?     @relation(fields: [userId], references: [id])
+  createdAt   DateTime  @default(now())
+  Bet         Bet[]
+  Auction     Auction[]
+}
+
+model Auction {
+  id        String   @id @default(cuid())
+  userId    String?
+  duckId    String
+  amount    Float    @default(0)
+  duck      Duck     @relation(fields: [duckId], references: [id])
+  user      User?    @relation(fields: [userId], references: [id])
+  newName   String
+  expiredAt DateTime
+  createdAt DateTime @default(now())
+}
+
+model Deposit {
+  id        String   @id @default(cuid())
+  userId    String
+  amount    Float
+  createdAt DateTime @default(now())
+  user      User     @relation(fields: [userId], references: [id])
+}
+
+model Bonus {
+  id        String   @id @default(cuid())
+  userId    String
+  amount    Float
+  createdAt DateTime @default(now())
+  user      User     @relation(fields: [userId], references: [id])
+}
